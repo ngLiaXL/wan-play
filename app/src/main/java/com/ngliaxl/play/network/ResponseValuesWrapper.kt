@@ -18,7 +18,7 @@ abstract class ResponseValuesWrapper<Data> : UseCase.ResponseValue {
 
     interface ResponseCode {
         companion object {
-            val SUCCESS = 0
+            const val SUCCESS : Int = 0
         }
     }
 

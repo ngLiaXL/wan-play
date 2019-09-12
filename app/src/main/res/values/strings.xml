@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">wan-play</string>
+    <string name="common_net_error">网络或服务器异常</string>
+    <string name="text">wan-p</string>
 </resources>
