@@ -10,6 +10,7 @@ interface HomeContract {
     interface View : BaseView {
 
         fun onRespArticles(articles: ArticlesUseCase.Articles?)
+        fun onRespTopArticles(articles: List<ArticlesUseCase.Article>?)
 
     }
 

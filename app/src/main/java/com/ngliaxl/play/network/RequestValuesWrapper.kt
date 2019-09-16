@@ -86,5 +86,7 @@ abstract class RequestValuesWrapper : UseCase.RequestValues {
         }
     }
 
-     abstract fun checkInput(): Boolean
+    open fun checkInput(): Boolean {
+        return true
+    }
 }

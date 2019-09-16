@@ -2,6 +2,7 @@ package com.ngliaxl.play
 
 import android.content.Context
 import android.os.Bundle
+import android.text.Html
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.ngliaxl.play.module.home.HomeContract
@@ -21,6 +22,8 @@ class MainActivity : BaseActivity(), HomeContract.View {
 
 
     private lateinit var presenter: HomePresenter
+
+
     private lateinit var adapter: Adapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,10 +37,15 @@ class MainActivity : BaseActivity(), HomeContract.View {
 
 
         presenter.getArticles(0)
+        presenter.getTopArticles()
     }
 
     override fun onRespArticles(articles: ArticlesUseCase.Articles?) {
-        adapter.setNewData(articles?.datas)
+        articles?.datas?.let { adapter.addData(it) }
+    }
+
+    override fun onRespTopArticles(articles: List<ArticlesUseCase.Article>?) {
+        articles?.let { adapter.addData(0, it) }
     }
 
     override fun context(): Context {
@@ -55,8 +63,13 @@ class MainActivity : BaseActivity(), HomeContract.View {
 
 
     class Adapter : BaseQuickAdapter<ArticlesUseCase.Article, BaseViewHolder>(R.layout.layout_home_item) {
-        override fun convert(helper: BaseViewHolder?, item: ArticlesUseCase.Article?) {
-            helper?.setText(R.id.result,item?.author)
+        override fun convert(helper: BaseViewHolder, item: ArticlesUseCase.Article?) {
+            helper.setGone(R.id.top, item?.type == 1)
+            helper.setGone(R.id.fresh, item?.fresh ?: false)
+            helper.setText(R.id.title, Html.fromHtml(item?.title))
+            helper.setText(R.id.author, "·${item?.author}")
+            helper.setText(R.id.niceDate, item?.niceDate)
+            helper.setText(R.id.type, "${item?.superChapterName}·${item?.chapterName}")
         }
 
     }

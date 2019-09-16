@@ -10,7 +10,10 @@ interface PlayService {
 
 
     @GET("/article/list/{page}/json")
-    fun getArticles(@Path("page") page: Int): Observable<ArticlesUseCase.ResponseValue>
+    fun getArticles(@Path("page") page: Int): Observable<ArticlesUseCase.HomeArticlesUseCase.ResponseValue>
+
+    @GET("/article/top/json")
+    fun getTopArticles(): Observable<ArticlesUseCase.TopArticlesUseCase.ResponseValue>
 
     @GET("/banner/json")
     fun getBanner(): Observable<BannersUseCase.ResponseValue>

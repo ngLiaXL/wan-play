@@ -8,20 +8,40 @@ import com.ngliaxl.play.network.RequestValuesWrapper
 import com.ngliaxl.play.network.ResponseValuesWrapper
 import io.reactivex.Observable
 
-class ArticlesUseCase : UseCase<ArticlesUseCase.RequestValues, ArticlesUseCase.ResponseValue>() {
+interface ArticlesUseCase {
 
-    class RequestValues(
-        @field:Expose
-        var page: Int
-    ) : RequestValuesWrapper() {
+    class HomeArticlesUseCase : UseCase<HomeArticlesUseCase.RequestValues, HomeArticlesUseCase.ResponseValue>() {
 
-        override fun checkInput(): Boolean {
-            return true
+        class RequestValues(
+            @field:Expose
+            var page: Int
+        ) : RequestValuesWrapper()
+
+        class ResponseValue : ResponseValuesWrapper<Articles>()
+
+
+        override fun buildObservable(values: RequestValues): Observable<ResponseValue> {
+            val service = ServiceGenerator.getInstance().getService(
+                PlayService::class.java
+            )
+            return service.getArticles(values.page)
         }
+
+
     }
 
-    class ResponseValue : ResponseValuesWrapper<Articles>()
+    class TopArticlesUseCase : UseCase<RequestValuesWrapper, TopArticlesUseCase.ResponseValue>() {
 
+        class ResponseValue : ResponseValuesWrapper<List<Article>>()
+
+        override fun buildObservable(values: RequestValuesWrapper): Observable<ResponseValue> {
+            val service = ServiceGenerator.getInstance().getService(
+                PlayService::class.java
+            )
+            return service.getTopArticles()
+        }
+
+    }
 
     data class Articles(
         val curPage: Int?,
@@ -64,11 +84,6 @@ class ArticlesUseCase : UseCase<ArticlesUseCase.RequestValues, ArticlesUseCase.R
         val name: String,
         val url: String
     )
-
-    override fun buildObservable(values: RequestValues): Observable<ResponseValue> {
-        val service = ServiceGenerator.getInstance().getService(PlayService::class.java)
-        return service.getArticles(values.page)
-    }
 
 
 }
