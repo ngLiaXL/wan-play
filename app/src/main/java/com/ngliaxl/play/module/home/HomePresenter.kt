@@ -19,8 +19,7 @@ internal class HomePresenter(val view: HomeContract.View) : HomeContract.Present
             return
         }
         useCaseHandler.execute(
-            ArticlesUseCase.HomeArticlesUseCase(),
-            request,
+            ArticlesUseCase.HomeArticlesUseCase(request),
             object : UseCase.UseCaseCallback<ArticlesUseCase.HomeArticlesUseCase.ResponseValue> {
                 override fun onSuccess(response: ArticlesUseCase.HomeArticlesUseCase.ResponseValue?) {
                     view.hideLoading()
@@ -41,8 +40,7 @@ internal class HomePresenter(val view: HomeContract.View) : HomeContract.Present
     internal fun getTopArticles() {
         val request = object : RequestValuesWrapper() {}
         useCaseHandler.execute(
-            ArticlesUseCase.TopArticlesUseCase(),
-            request,
+            ArticlesUseCase.TopArticlesUseCase(request),
             object : UseCase.UseCaseCallback<ArticlesUseCase.TopArticlesUseCase.ResponseValue> {
                 override fun onSuccess(response: ArticlesUseCase.TopArticlesUseCase.ResponseValue?) {
                     view.hideLoading()

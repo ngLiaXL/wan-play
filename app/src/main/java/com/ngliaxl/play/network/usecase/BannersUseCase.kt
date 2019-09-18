@@ -7,13 +7,14 @@ import com.ngliaxl.play.network.RequestValuesWrapper
 import com.ngliaxl.play.network.ResponseValuesWrapper
 import io.reactivex.Observable
 
-class BannersUseCase : UseCase<BannersUseCase.RequestValues, BannersUseCase.ResponseValue>() {
+class BannersUseCase(request: RequestValues) :
+    UseCase<BannersUseCase.RequestValues, BannersUseCase.ResponseValue>() {
 
-    class RequestValues : RequestValuesWrapper() {
-        override fun checkInput(): Boolean {
-            return true
-        }
+    init {
+        requestValues = request
     }
+
+    class RequestValues : RequestValuesWrapper()
 
     class ResponseValue : ResponseValuesWrapper<List<Banner>>()
 

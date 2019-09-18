@@ -10,7 +10,12 @@ import io.reactivex.Observable
 
 interface ArticlesUseCase {
 
-    class HomeArticlesUseCase : UseCase<HomeArticlesUseCase.RequestValues, HomeArticlesUseCase.ResponseValue>() {
+    class HomeArticlesUseCase(request: RequestValues) :
+        UseCase<HomeArticlesUseCase.RequestValues, HomeArticlesUseCase.ResponseValue>() {
+
+        init {
+            requestValues = request
+        }
 
         class RequestValues(
             @field:Expose
@@ -30,7 +35,12 @@ interface ArticlesUseCase {
 
     }
 
-    class TopArticlesUseCase : UseCase<RequestValuesWrapper, TopArticlesUseCase.ResponseValue>() {
+    class TopArticlesUseCase(request: RequestValuesWrapper) :
+        UseCase<RequestValuesWrapper, TopArticlesUseCase.ResponseValue>() {
+
+        init {
+            requestValues = request
+        }
 
         class ResponseValue : ResponseValuesWrapper<List<Article>>()
 

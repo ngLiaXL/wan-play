@@ -31,6 +31,8 @@ class MainActivity : BaseActivity(), HomeContract.View {
 
     private lateinit var adapter: Adapter
 
+    private var articlesPage = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -40,17 +42,40 @@ class MainActivity : BaseActivity(), HomeContract.View {
         adapter = Adapter()
         recyclerView.adapter = adapter
 
+        refreshLayout.setOnRefreshListener {
+            refresh()
+        }
+        refresh()
+    }
 
+    private fun refresh() {
+        articlesPage = 0
+        refreshLayout.isRefreshing = true
+        adapter.setEnableLoadMore(false)
         presenter.getArticles(0)
         presenter.getTopArticles()
     }
 
+    private fun loadMore() {
+        presenter.getArticles(++articlesPage)
+    }
+
+    private fun onLoadEnd() {
+        adapter.setEnableLoadMore(true)
+        refreshLayout.isRefreshing = false
+    }
+
     override fun onRespArticles(articles: ArticlesUseCase.Articles?) {
         articles?.datas?.let { adapter.addData(it) }
+
+        adapter.setEnableLoadMore(true)
+        refreshLayout.isRefreshing = false
     }
 
     override fun onRespTopArticles(articles: List<ArticlesUseCase.Article>?) {
         articles?.let { adapter.addData(0, it) }
+        adapter.setEnableLoadMore(true)
+        refreshLayout.isRefreshing = false
     }
 
     override fun context(): Context {
@@ -86,9 +111,7 @@ class MainActivity : BaseActivity(), HomeContract.View {
             val view = helper.getView<LinearLayout>(R.id.tagsLayout)
             if (item?.tags != null && item.tags.isNotEmpty()) {
                 if (view.childCount == 0) {
-                    for (tag in item.tags) {
-                        view.addView(generateTagTextView(mContext))
-                    }
+                    for (tag in item.tags) view.addView(generateTagTextView(mContext))
                 }
             } else {
                 if (view.childCount > 0) view.removeAllViews()

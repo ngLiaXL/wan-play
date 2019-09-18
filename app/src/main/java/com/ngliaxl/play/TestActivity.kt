@@ -25,13 +25,12 @@ class TestActivity : BaseActivity() {
     }
 
     fun onClickArticle(view: View) {
+
         val request = ArticlesUseCase.HomeArticlesUseCase.RequestValues(0)
-        if (!request.checkInput()) {
-            return
-        }
+
+
         handler.execute(
-            ArticlesUseCase.HomeArticlesUseCase(),
-            request,
+            ArticlesUseCase.HomeArticlesUseCase(request),
             object : UseCase.UseCaseCallback<ArticlesUseCase.HomeArticlesUseCase.ResponseValue> {
                 override fun onSuccess(response: ArticlesUseCase.HomeArticlesUseCase.ResponseValue?) {
                     result(response)
@@ -48,7 +47,7 @@ class TestActivity : BaseActivity() {
         if (!request.checkInput()) {
             return
         }
-        handler.execute(BannersUseCase(), request, object : UseCase.UseCaseCallback<BannersUseCase.ResponseValue> {
+        handler.execute(BannersUseCase(request), object : UseCase.UseCaseCallback<BannersUseCase.ResponseValue> {
             override fun onSuccess(response: BannersUseCase.ResponseValue?) {
                 result(response)
             }
