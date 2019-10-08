@@ -12,6 +12,50 @@ internal class HomePresenter(val view: HomeContract.View) : HomeContract.Present
 
     private val useCaseHandler: UseCaseHandler = UseCaseHandler()
 
+
+    internal fun getAllArticles() {
+        val topArticlesUseCase =
+            ArticlesUseCase.TopArticlesUseCase(object : RequestValuesWrapper() {})
+        val homeArticlesUseCase =
+            ArticlesUseCase.HomeArticlesUseCase(ArticlesUseCase.HomeArticlesUseCase.RequestValues(0))
+        useCaseHandler.execute2(topArticlesUseCase, homeArticlesUseCase,
+            object : UseCaseHandler.ZipCallback<ArticlesUseCase.TopArticlesUseCase.ResponseValue,
+                    ArticlesUseCase.HomeArticlesUseCase.ResponseValue, MutableList<ArticlesUseCase.Article>> {
+                override fun apply(
+                    r1: ArticlesUseCase.TopArticlesUseCase.ResponseValue?,
+                    r2: ArticlesUseCase.HomeArticlesUseCase.ResponseValue?
+                ): MutableList<ArticlesUseCase.Article>? {
+                    if (r1 == null && r2 == null) {
+                        return null
+                    }
+                    if (r1 == null) return r2?.data?.datas as MutableList<ArticlesUseCase.Article>
+
+                    val re1 = r1.data as MutableList<ArticlesUseCase.Article>
+                    val re2 = r2?.data?.datas as MutableList<ArticlesUseCase.Article>
+
+                    re1.addAll(re2)
+                    return re1
+                }
+
+            },
+            object : UseCase.UseCaseCallback<MutableList<ArticlesUseCase.Article>> {
+                override fun onError(exception: ResponeThrowable?) {
+                    view.hideLoading()
+                    view.onError(exception.toString())
+                }
+
+                override fun onSuccess(response: MutableList<ArticlesUseCase.Article>?) {
+                    view.hideLoading()
+                    view.onRespArticlesWithTop(response)
+                }
+
+            }
+
+        )
+
+    }
+
+
     internal fun getArticles(page: Int) {
         val request = ArticlesUseCase.HomeArticlesUseCase.RequestValues(page)
         if (!request.checkInput()) {
@@ -25,7 +69,9 @@ internal class HomePresenter(val view: HomeContract.View) : HomeContract.Present
                     view.hideLoading()
                     when {
                         response == null -> view.onError(NETWORK_ERROR)
-                        ResponseValuesWrapper.ResponseCode.SUCCESS == response.errorCode -> view.onRespArticles(response.data)
+                        ResponseValuesWrapper.ResponseCode.SUCCESS == response.errorCode -> view.onRespArticles(
+                            response.data
+                        )
                         else -> view.onError(response.errorMsg ?: NETWORK_ERROR)
                     }
                 }
@@ -46,7 +92,9 @@ internal class HomePresenter(val view: HomeContract.View) : HomeContract.Present
                     view.hideLoading()
                     when {
                         response == null -> view.onError(NETWORK_ERROR)
-                        ResponseValuesWrapper.ResponseCode.SUCCESS == response.errorCode -> view.onRespTopArticles(response.data)
+                        ResponseValuesWrapper.ResponseCode.SUCCESS == response.errorCode -> view.onRespTopArticles(
+                            response.data
+                        )
                         else -> view.onError(response.errorMsg ?: NETWORK_ERROR)
                     }
                 }

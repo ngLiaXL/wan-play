@@ -11,6 +11,7 @@ interface HomeContract {
 
         fun onRespArticles(articles: ArticlesUseCase.Articles?)
         fun onRespTopArticles(articles: List<ArticlesUseCase.Article>?)
+        fun onRespArticlesWithTop(articles : MutableList<ArticlesUseCase.Article>?)
 
     }
 

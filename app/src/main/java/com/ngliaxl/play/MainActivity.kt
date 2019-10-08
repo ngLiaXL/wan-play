@@ -52,8 +52,13 @@ class MainActivity : BaseActivity(), HomeContract.View {
         articlesPage = 0
         refreshLayout.isRefreshing = true
         adapter.setEnableLoadMore(false)
-        presenter.getArticles(0)
-        presenter.getTopArticles()
+        presenter.getAllArticles()
+    }
+
+    override fun onRespArticlesWithTop(articles: MutableList<ArticlesUseCase.Article>?) {
+        adapter.setEnableLoadMore(true)
+        refreshLayout.isRefreshing = false
+        adapter.setNewData(articles)
     }
 
     private fun loadMore() {

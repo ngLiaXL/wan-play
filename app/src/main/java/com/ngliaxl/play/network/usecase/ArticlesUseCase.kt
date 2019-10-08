@@ -10,6 +10,7 @@ import io.reactivex.Observable
 
 interface ArticlesUseCase {
 
+
     class HomeArticlesUseCase(request: RequestValues) :
         UseCase<HomeArticlesUseCase.RequestValues, HomeArticlesUseCase.ResponseValue>() {
 

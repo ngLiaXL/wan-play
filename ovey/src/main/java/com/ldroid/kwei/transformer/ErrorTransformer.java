@@ -1,14 +1,12 @@
 package com.ldroid.kwei.transformer;
 
-import com.ldroid.kwei.UseCase;
-
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.ObservableTransformer;
 import io.reactivex.functions.Function;
 
 
-public class ErrorTransformer<T extends UseCase.ResponseValue> implements
+public class ErrorTransformer<T> implements
         ObservableTransformer<T, T> {
 
 

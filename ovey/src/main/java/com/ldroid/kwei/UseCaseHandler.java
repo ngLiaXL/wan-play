@@ -20,10 +20,12 @@ package com.ldroid.kwei;
 import com.ldroid.kwei.exception.ExceptionHandler;
 import com.ldroid.kwei.transformer.ErrorTransformer;
 import com.ldroid.kwei.transformer.SchedulerTransformer;
+
 import io.reactivex.Observable;
 import io.reactivex.ObservableTransformer;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.BiFunction;
 import io.reactivex.observers.DisposableObserver;
 
 
@@ -50,7 +52,35 @@ public class UseCaseHandler {
     }
 
 
-    private static final class DefaultObserver<R extends UseCase.ResponseValue> extends
+    public <T1 extends UseCase.RequestValues, T2 extends UseCase.RequestValues,
+            R1 extends UseCase.ResponseValue, R2 extends UseCase.ResponseValue, R> void execute2(
+            UseCase<T1, R1> useCase1, UseCase<T2, R2> useCase2, final ZipCallback<R1, R2, R> zipCallback,
+            UseCase.UseCaseCallback<R> resultCallback) {
+        execute2(useCase1, useCase2, new SchedulerTransformer<R>(), zipCallback, resultCallback);
+    }
+
+
+    public <T1 extends UseCase.RequestValues, T2 extends UseCase.RequestValues,
+            R1 extends UseCase.ResponseValue, R2 extends UseCase.ResponseValue, R> void execute2(
+            UseCase<T1, R1> useCase1, UseCase<T2, R2> useCase2, ObservableTransformer<R, R> composer,
+            final ZipCallback<R1, R2, R> zipCallback,
+            UseCase.UseCaseCallback<R> resultCallback) {
+        Observable<R> observable = Observable.zip(useCase1.buildObservable(), useCase2.buildObservable(), new BiFunction<R1, R2, R>() {
+            @Override
+            public R apply(R1 r1, R2 r2) {
+                return zipCallback.apply(r1, r2);
+            }
+        }).compose(composer).compose(new ErrorTransformer<R>());
+        addDisposable(observable.subscribeWith(new DefaultObserver<>(resultCallback)));
+    }
+
+
+    public interface ZipCallback<R1, R2, R> {
+        R apply(R1 r1, R2 r2);
+    }
+
+
+    private static final class DefaultObserver<R> extends
             DisposableObserver<R> {
 
         private final UseCase.UseCaseCallback<R> mCallback;
